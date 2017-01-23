@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/nel215/monkey/ast"
 	"github.com/nel215/monkey/lexer"
 	"testing"
 )
@@ -21,4 +22,19 @@ let x = 5;
 		t.Fatalf("program.Statements does not contain 3 statements. got=%d",
 			len(program.Statements))
 	}
+
+	tests := []struct {
+		expectedIdentifier string
+	}{
+		{"x"},
+	}
+
+	for i, _ := range tests {
+		stmt := program.Statements[i]
+		_, ok := stmt.(*ast.LetStatement)
+		if !ok {
+			t.Fatalf("s not *ast.LetStatement. got=%T", stmt)
+		}
+	}
+
 }
