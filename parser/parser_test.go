@@ -29,11 +29,19 @@ let x = 5;
 		{"x"},
 	}
 
-	for i, _ := range tests {
+	for i, str := range tests {
 		stmt := program.Statements[i]
-		_, ok := stmt.(*ast.LetStatement)
+		letStmt, ok := stmt.(*ast.LetStatement)
 		if !ok {
 			t.Fatalf("s not *ast.LetStatement. got=%T", stmt)
+		}
+
+		if letStmt.Name.Value != str.expectedIdentifier {
+			t.Fatalf("letStmt.Name.Value not '%s'. got=%s", str.expectedIdentifier, letStmt.Name.Value)
+		}
+
+		if letStmt.Name.TokenLiteral() != str.expectedIdentifier {
+			t.Fatalf("s.Name not '%s'. got=%s", str.expectedIdentifier, letStmt.Name)
 		}
 	}
 
