@@ -69,6 +69,17 @@ return 993322;
 		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
 	}
 
+	for _, stmt := range program.Statements {
+		retStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.ReturnStatement. got=%T", stmt)
+			continue
+		}
+		if retStmt.TokenLiteral() != "return" {
+			t.Errorf("retStmt.TokenLiteral not 'return', got=%q", retStmt.TokenLiteral())
+		}
+	}
+
 }
 
 func checkParserErrors(t *testing.T, p *Parser) {
