@@ -141,6 +141,6 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 	_, ok = stmt.Expression.(*ast.IntegerLiteral)
 	if !ok {
-		t.Fatalf("stmt.Expression is not *ast.Identifier. got=%T", stmt.Expression)
+		t.Fatalf("stmt.Expression is not *ast.IntegerLiteral. got=%T", stmt.Expression)
 	}
 }
