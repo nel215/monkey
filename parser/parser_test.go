@@ -171,5 +171,10 @@ func TestParsingPrefixExpressions(t *testing.T) {
 			t.Fatalf("program.Statements does not contain 1 statemtns., got=%d\n", len(program.Statements))
 		}
 
+		_, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statemetns[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+
 	}
 }
