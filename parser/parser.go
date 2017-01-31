@@ -25,6 +25,7 @@ type Parser struct {
 const (
 	_ int = iota
 	LOWEST
+	PREFIX
 )
 
 func New(l *lexer.Lexer) *Parser {
@@ -35,6 +36,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -147,6 +150,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
+// prefix parse function
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
@@ -166,6 +170,20 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return lit
 }
 
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	exp := &ast.PrefixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+	}
+
+	p.nextToken()
+
+	exp.Right = p.parseExpression(PREFIX)
+
+	return exp
+}
+
+//----------------------
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
