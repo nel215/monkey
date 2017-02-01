@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/nel215/monkey/ast"
 	"github.com/nel215/monkey/lexer"
 	"testing"
@@ -171,10 +172,39 @@ func TestParsingPrefixExpressions(t *testing.T) {
 			t.Fatalf("program.Statements does not contain 1 statemtns., got=%d\n", len(program.Statements))
 		}
 
-		_, ok := program.Statements[0].(*ast.ExpressionStatement)
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
 		if !ok {
 			t.Fatalf("program.Statemetns[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
 		}
 
+		exp, ok := stmt.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression is not ast.PrefixExpression. got=%T", stmt.Expression)
+		}
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operator is not %s . got=%s", tt.operator, exp.Operator)
+		}
+		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+			return
+		}
 	}
+}
+
+func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
+	integ, ok := il.(*ast.IntegerLiteral)
+	if !ok {
+		t.Errorf("il is not *ast.Expression. got=%T", il)
+		return false
+	}
+
+	if integ.Value != value {
+		t.Errorf("integ.Value is not %d. got=%d", value, integ.Value)
+		return false
+	}
+
+	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
+		t.Errorf("integ.Value is not %d. got=%s", value, integ.TokenLiteral())
+		return false
+	}
+	return true
 }
