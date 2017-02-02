@@ -25,7 +25,12 @@ type Parser struct {
 const (
 	_ int = iota
 	LOWEST
-	PREFIX
+	EQUALS      // ==
+	LESSGREATER // > or <
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -X or !X
+	CALL        // func(X)
 )
 
 func New(l *lexer.Lexer) *Parser {
