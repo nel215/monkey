@@ -5,41 +5,16 @@ import (
 	"github.com/nel215/monkey/token"
 )
 
+// Base
 type Node interface {
 	TokenLiteral() string
 	String() string
 }
 
+// Statement
 type Statement interface {
 	Node
 	statementNode()
-}
-
-type Expression interface {
-	Node
-	expressionNode()
-}
-
-type Program struct {
-	Statements []Statement
-}
-
-func (p *Program) TokenLiteral() string {
-	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
-	} else {
-		return ""
-	}
-}
-
-func (p *Program) String() string {
-	var out bytes.Buffer
-
-	for _, s := range p.Statements {
-		out.WriteString(s.String())
-	}
-
-	return out.String()
 }
 
 type LetStatement struct {
@@ -66,15 +41,6 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
-type Identifier struct {
-	Token token.Token
-	Value string
-}
-
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-func (i *Identifier) String() string       { return i.Value }
-
 type ReturnStatement struct {
 	Token       token.Token
 	ReturnValue Expression
@@ -96,7 +62,21 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
-/* Expression */
+// Expression
+type Expression interface {
+	Node
+	expressionNode()
+}
+
+type Identifier struct {
+	Token token.Token
+	Value string
+}
+
+func (i *Identifier) expressionNode()      {}
+func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+func (i *Identifier) String() string       { return i.Value }
+
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
@@ -167,6 +147,29 @@ func (ie *InfixExpression) String() string {
 	out.WriteString(" ")
 	out.WriteString(ie.Right.String())
 	out.WriteString(")")
+
+	return out.String()
+}
+
+// Program
+type Program struct {
+	Statements []Statement
+}
+
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	} else {
+		return ""
+	}
+}
+
+func (p *Program) String() string {
+	var out bytes.Buffer
+
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
 
 	return out.String()
 }
