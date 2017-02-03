@@ -24,6 +24,8 @@ func checkParserErrors(t *testing.T, p *Parser) {
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
 	switch v := expected.(type) {
+	case bool:
+		return testBoolean(t, exp, v)
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
 	case int64:
@@ -34,6 +36,23 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		t.Errorf("type of exp not handled. got=%T", exp)
 		return false
 	}
+}
+
+func testBoolean(t *testing.T, exp ast.Expression, value bool) bool {
+	b, ok := exp.(*ast.Boolean)
+	if !ok {
+		t.Errorf("exp is not ast.Boolean. got=%T", exp)
+		return false
+	}
+	if b.Value != value {
+		t.Errorf("ident.Value is not %t. got=%t", value, b.Value)
+		return false
+	}
+	if b.TokenLiteral() != fmt.Sprintf("%t", value) {
+		t.Errorf("ident.TokenLiteral() is not %t. got=%s", value, b.TokenLiteral())
+		return false
+	}
+	return true
 }
 
 func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
@@ -195,17 +214,14 @@ func TestIdentifierExpression(t *testing.T) {
 
 func TestBooleanExpression(t *testing.T) {
 	tests := []struct {
-		input   string
-		literal string
-		value   bool
+		input string
+		value bool
 	}{
 		{
-			"true",
 			"true",
 			true,
 		},
 		{
-			"false",
 			"false",
 			false,
 		},
@@ -226,15 +242,8 @@ func TestBooleanExpression(t *testing.T) {
 			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
 		}
 
-		b, ok := stmt.Expression.(*ast.Boolean)
-		if !ok {
-			t.Fatalf("stmt.Expression is not ast.Boolean. got=%T", stmt.Expression)
-		}
-		if b.Value != tt.value {
-			t.Errorf("ident.Value is not %t. got=%t", tt.value, b.Value)
-		}
-		if b.TokenLiteral() != tt.literal {
-			t.Errorf("ident.TokenLiteral() is not %s. got=%s", tt.literal, b.TokenLiteral())
+		if !testLiteralExpression(t, stmt.Expression, tt.value) {
+			continue
 		}
 	}
 }
