@@ -310,9 +310,9 @@ func TestParsingPrefixExpressions(t *testing.T) {
 func TestParsingInfixExpressions(t *testing.T) {
 	infixTests := []struct {
 		input      string
-		leftValue  int64
+		leftValue  interface{}
 		operator   string
-		rightValue int64
+		rightValue interface{}
 	}{
 		{"5 + 5;", 5, "+", 5},
 		{"5 - 5;", 5, "-", 5},
@@ -322,6 +322,10 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"5 > 5;", 5, ">", 5},
 		{"5 == 5;", 5, "==", 5},
 		{"5 != 5;", 5, "!=", 5},
+
+		{"true == true;", true, "==", true},
+		{"true != false;", true, "!=", false},
+		{"false == false;", false, "==", false},
 	}
 
 	for _, tt := range infixTests {
