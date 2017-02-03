@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// helper
 func checkParserErrors(t *testing.T, p *Parser) {
 	errors := p.Errors()
 
@@ -20,6 +21,27 @@ func checkParserErrors(t *testing.T, p *Parser) {
 	}
 	t.FailNow()
 }
+
+func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
+	integ, ok := il.(*ast.IntegerLiteral)
+	if !ok {
+		t.Errorf("il is not *ast.Expression. got=%T", il)
+		return false
+	}
+
+	if integ.Value != value {
+		t.Errorf("integ.Value is not %d. got=%d", value, integ.Value)
+		return false
+	}
+
+	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
+		t.Errorf("integ.Value is not %d. got=%s", value, integ.TokenLiteral())
+		return false
+	}
+	return true
+}
+
+//---
 
 func TestLetStatement(t *testing.T) {
 	input := `
@@ -190,25 +212,6 @@ func TestParsingPrefixExpressions(t *testing.T) {
 	}
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
-	integ, ok := il.(*ast.IntegerLiteral)
-	if !ok {
-		t.Errorf("il is not *ast.Expression. got=%T", il)
-		return false
-	}
-
-	if integ.Value != value {
-		t.Errorf("integ.Value is not %d. got=%d", value, integ.Value)
-		return false
-	}
-
-	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
-		t.Errorf("integ.Value is not %d. got=%s", value, integ.TokenLiteral())
-		return false
-	}
-	return true
-}
-
 func TestParsingInfixExpressions(t *testing.T) {
 	infixTests := []struct {
 		input      string
@@ -227,6 +230,28 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 		if len(program.Statements) != 1 {
 			t.Fatalf("program.Statements does not contain 1 statements. got=%d\n", len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statement is not ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+
+		exp, ok := stmt.Expression.(*ast.InfixExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression is not ast.InfixExpression. got=%T", stmt.Expression)
+		}
+
+		if !testIntegerLiteral(t, exp.Left, tt.leftValue) {
+			return
+		}
+
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operator is not %s. got=%s", tt.operator, exp.Operator)
+		}
+
+		if !testIntegerLiteral(t, exp.Right, tt.rightValue) {
+			return
 		}
 	}
 }
