@@ -26,6 +26,8 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 	switch v := expected.(type) {
 	case int64:
 		return testIntegerLiteral(t, exp, v)
+	case string:
+		return testIdentifier(t, exp, v)
 	default:
 		t.Errorf("type of exp not handled. got=%T", exp)
 		return false
@@ -46,6 +48,23 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 
 	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
 		t.Errorf("integ.Value is not %d. got=%s", value, integ.TokenLiteral())
+		return false
+	}
+	return true
+}
+
+func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+	ident, ok := exp.(*ast.Identifier)
+	if !ok {
+		t.Errorf("exp is not *ast.Identifier. got=%T", exp)
+		return false
+	}
+	if ident.Value != value {
+		t.Errorf("ident.Value is not %s. got=%s", value, ident.Value)
+		return false
+	}
+	if ident.TokenLiteral() != value {
+		t.Errorf("ident.TokenLiteral() is not %s. got=%s", value, ident.TokenLiteral())
 		return false
 	}
 	return true
@@ -145,15 +164,8 @@ func TestIdentifierExpression(t *testing.T) {
 		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
 	}
 
-	ident, ok := stmt.Expression.(*ast.Identifier)
-	if !ok {
-		t.Fatalf("stmt.Expression is not *ast.Identifier. got=%T", stmt.Expression)
-	}
-	if ident.Value != "foobar" {
-		t.Errorf("ident.Value is not foobar. got=%s", ident.Value)
-	}
-	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("ident.TokenLiteral() is not foobar. got=%s", ident.TokenLiteral())
+	if !testLiteralExpression(t, stmt.Expression, "foobar") {
+		return
 	}
 }
 
