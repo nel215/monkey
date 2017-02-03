@@ -353,7 +353,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 }
 
 func TestIfExpression(t *testing.T) {
-	input := "if (x < y) { x }"
+	input := "if (x < y) { x } else { y }"
 
 	l := lexer.New(input)
 	p := New(l)
@@ -384,15 +384,24 @@ func TestIfExpression(t *testing.T) {
 
 	con, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
-		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
+		t.Fatalf("Consequence.Statements[0] is not ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
 	}
 
 	if !testLiteralExpression(t, con.Expression, "x") {
 		return
 	}
 
-	if exp.Alternative != nil {
-		t.Errorf("exp.Alternative was not nil. got=%+v", exp.Alternative)
+	if len(exp.Alternative.Statements) != 1 {
+		t.Fatalf("alternative is not 1 statements. got=%d", len(exp.Alternative.Statements))
+	}
+
+	alt, ok := exp.Alternative.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Alternative.Statements[0] is not ast.ExpressionStatement. got=%T", exp.Alternative.Statements[0])
+	}
+
+	if !testLiteralExpression(t, alt.Expression, "y") {
+		return
 	}
 
 }
