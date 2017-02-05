@@ -447,6 +447,35 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	testInfixExpression(t, bstmt.Expression, "x", "+", "y")
 }
 
+func TestFunctionParameterParsing(t *testing.T) {
+	tests := []struct {
+		input          string
+		expectedParams []string
+	}{
+		{input: "fn() {};", expectedParams: []string{}},
+		{input: "fn(x) {};", expectedParams: []string{"x"}},
+		{input: "fn(x, y, z) {};", expectedParams: []string{"x", "y", "z"}},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		stmt := program.Statements[0].(*ast.ExpressionStatement)
+		f := stmt.Expression.(*ast.FunctionLiteral)
+
+		if len(f.Parameters) != len(tt.expectedParams) {
+			t.Errorf("length of parameters is not %d. got=%d\n", len(tt.expectedParams), len(f.Parameters))
+		}
+
+		for i, id := range tt.expectedParams {
+			testLiteralExpression(t, f.Parameters[i], id)
+		}
+	}
+}
+
 func TestOperatorPrecedenceParsing(t *testing.T) {
 	tests := []struct {
 		input     string
