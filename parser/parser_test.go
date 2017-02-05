@@ -417,6 +417,34 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	if len(program.Statements) != 1 {
 		t.Fatalf("program.Statements does not contain 1 statements. got=%d\n", len(program.Statements))
 	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	f, ok := stmt.Expression.(*ast.FunctionLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T", stmt.Expression)
+	}
+
+	if len(f.Parameters) != 2 {
+		t.Fatalf("f.Parameters wrong. want 2, got=%d\n", len(f.Parameters))
+	}
+
+	testLiteralExpression(t, f.Parameters[0], "x")
+	testLiteralExpression(t, f.Parameters[1], "y")
+
+	if len(f.Body.Statements) != 1 {
+		t.Fatalf("f.Body.Statements does not contain 1 statements. got=%d\n", len(f.Body.Statements))
+	}
+
+	bstmt, ok := f.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("f.Body.Statements[0] is not ast.ExpressionStatement. got=%T", f.Body.Statements[0])
+	}
+
+	testInfixExpression(t, bstmt.Expression, "x", "+", "y")
 }
 
 func TestOperatorPrecedenceParsing(t *testing.T) {
