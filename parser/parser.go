@@ -387,13 +387,12 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	}
 
 	p.nextToken()
-	// TODO: append
+	args = append(args, p.parseExpression(LOWEST))
 
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
-		// TODO: append
-		p.parseExpression(LOWEST)
+		args = append(args, p.parseExpression(LOWEST))
 	}
 
 	if !p.expectPeek(token.RPAREN) {
