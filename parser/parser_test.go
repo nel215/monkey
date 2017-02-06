@@ -115,6 +115,26 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, ope
 
 //---
 
+func testLetStatement(t *testing.T, s ast.Statement, expectedIdentifier string, expectedValue interface{}) bool {
+	stmt, ok := s.(*ast.LetStatement)
+	if !ok {
+		t.Fatalf("s is not *ast.LetStatement. got=%T", s)
+	}
+
+	if stmt.Name.Value != expectedIdentifier {
+		t.Fatalf("stmt.Name.Value is not '%s'. got=%s", expectedIdentifier, stmt.Name.Value)
+	}
+
+	if stmt.Name.TokenLiteral() != expectedIdentifier {
+		t.Fatalf("s.Name.TokenLiteral() is not '%s'. got=%s", expectedIdentifier, stmt.Name)
+	}
+
+	if !testLiteralExpression(t, stmt.Value, expectedValue) {
+		return false
+	}
+	return true
+}
+
 func TestLetStatement(t *testing.T) {
 	tests := []struct {
 		input              string
@@ -137,25 +157,10 @@ func TestLetStatement(t *testing.T) {
 				len(program.Statements))
 		}
 
-		stmt := program.Statements[0]
-		letStmt, ok := stmt.(*ast.LetStatement)
-		if !ok {
-			t.Fatalf("s not *ast.LetStatement. got=%T", stmt)
-		}
-
-		if letStmt.Name.Value != tt.expectedIdentifier {
-			t.Fatalf("letStmt.Name.Value not '%s'. got=%s", tt.expectedIdentifier, letStmt.Name.Value)
-		}
-
-		if letStmt.Name.TokenLiteral() != tt.expectedIdentifier {
-			t.Fatalf("s.Name not '%s'. got=%s", tt.expectedIdentifier, letStmt.Name)
-		}
-
-		if !testLiteralExpression(t, letStmt.Value, tt.expectedValue) {
-			return
+		if testLetStatement(t, program.Statements[0], tt.expectedIdentifier, tt.expectedValue) {
+			continue
 		}
 	}
-
 }
 
 func TestReturnStatements(t *testing.T) {
