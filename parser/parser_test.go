@@ -116,46 +116,43 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, ope
 //---
 
 func TestLetStatement(t *testing.T) {
-	input := `
-let x = 5;
-let y = 10;
-let foobar = 838383;
-`
-
-	l := lexer.New(input)
-	p := New(l)
-
-	program := p.ParseProgram()
-	checkParserErrors(t, p)
-	if program == nil {
-		t.Fatalf("ParseProgram() returned nil")
-	}
-	if len(program.Statements) != 3 {
-		t.Fatalf("program.Statements does not contain 3 statements. got=%d",
-			len(program.Statements))
-	}
-
 	tests := []struct {
+		input              string
 		expectedIdentifier string
+		expectedValue      interface{}
 	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
+		{"let x = 5;", "x", 5},
+		{"let y = true;", "y", true},
+		{"let foobar = y;", "foobar", "y"},
 	}
 
-	for i, str := range tests {
-		stmt := program.Statements[i]
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
+				len(program.Statements))
+		}
+
+		stmt := program.Statements[0]
 		letStmt, ok := stmt.(*ast.LetStatement)
 		if !ok {
 			t.Fatalf("s not *ast.LetStatement. got=%T", stmt)
 		}
 
-		if letStmt.Name.Value != str.expectedIdentifier {
-			t.Fatalf("letStmt.Name.Value not '%s'. got=%s", str.expectedIdentifier, letStmt.Name.Value)
+		if letStmt.Name.Value != tt.expectedIdentifier {
+			t.Fatalf("letStmt.Name.Value not '%s'. got=%s", tt.expectedIdentifier, letStmt.Name.Value)
 		}
 
-		if letStmt.Name.TokenLiteral() != str.expectedIdentifier {
-			t.Fatalf("s.Name not '%s'. got=%s", str.expectedIdentifier, letStmt.Name)
+		if letStmt.Name.TokenLiteral() != tt.expectedIdentifier {
+			t.Fatalf("s.Name not '%s'. got=%s", tt.expectedIdentifier, letStmt.Name)
+		}
+
+		if !testLiteralExpression(t, letStmt.Value, tt.expectedValue) {
+			return
 		}
 	}
 
