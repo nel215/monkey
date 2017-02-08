@@ -13,3 +13,9 @@ type Integer struct {
 }
 
 func (i *Integer) Inspect() string { return fmt.Sprintf("%d", i.Value) }
+
+type Boolean struct {
+	Value bool
+}
+
+func (b *Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
