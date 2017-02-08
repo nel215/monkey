@@ -10,7 +10,7 @@ import (
 func TestEvalIntegerExpression(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected interface{}
+		expected int64
 	}{
 		{"5", 5},
 		{"10", 10},
@@ -18,9 +18,7 @@ func TestEvalIntegerExpression(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		if evaluated != tt.expected {
-			t.Fatalf("fail")
-		}
+		testIntegerObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -30,4 +28,17 @@ func testEval(input string) object.Object {
 	program := p.ParseProgram()
 
 	return Eval(program)
+}
+
+func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+	res, ok := obj.(*object.Integer)
+	if !ok {
+		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
+		return false
+	}
+	if res.Value != expected {
+		t.Errorf("object has wrong value. got=%d, want=%d", res.Value, expected)
+		return false
+	}
+	return true
 }
