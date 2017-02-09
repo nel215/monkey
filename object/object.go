@@ -8,6 +8,11 @@ type Object interface {
 	Inspect() string
 }
 
+type Null struct {
+}
+
+func (n *Null) Inspect() string { return "null" }
+
 type Integer struct {
 	Value int64
 }
