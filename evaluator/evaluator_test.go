@@ -77,6 +77,11 @@ func TestBangOperator(t *testing.T) {
 		expected bool
 	}{
 		{"!true", false},
+		{"!false", true},
+		{"!5", false},
+		{"!!true", true},
+		{"!!false", false},
+		{"!!5", true},
 	}
 
 	for _, tt := range tests {
