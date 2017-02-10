@@ -72,6 +72,10 @@ func evalIntegerInfixExpression(operator string, left object.Object, right objec
 		return &object.Integer{Value: lv + rv}
 	case "-":
 		return &object.Integer{Value: lv - rv}
+	case "*":
+		return &object.Integer{Value: lv * rv}
+	case "/":
+		return &object.Integer{Value: lv / rv}
 	default:
 		return NULL
 	}
