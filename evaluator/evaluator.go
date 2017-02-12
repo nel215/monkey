@@ -60,6 +60,8 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 		return evalIntegerInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
+	case operator == "!=":
+		return nativeBoolToBooleanObject(left != right)
 	default:
 		return NULL
 	}
