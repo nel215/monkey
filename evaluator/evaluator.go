@@ -14,15 +14,14 @@ var (
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
-		for _, statement := range node.Statements {
-			return Eval(statement)
-		}
+		return evalStatements(node.Statements)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
 	case *ast.BlockStatement:
-		for _, statement := range node.Statements {
-			return Eval(statement)
-		}
+		return evalStatements(node.Statements)
+	case *ast.ReturnStatement:
+		val := Eval(node.ReturnValue)
+		return &object.ReturnValue{Value: val}
 
 		// Expression
 	case *ast.IntegerLiteral:
@@ -40,6 +39,20 @@ func Eval(node ast.Node) object.Object {
 		return evalIfExpression(node)
 	}
 	return nil
+}
+
+func evalStatements(stmts []ast.Statement) object.Object {
+	var res object.Object
+
+	for _, statement := range stmts {
+		res = Eval(statement)
+
+		if retVal, ok := res.(*object.ReturnValue); ok {
+			return retVal.Value
+		}
+	}
+
+	return res
 }
 
 func evalIfExpression(ie *ast.IfExpression) object.Object {
