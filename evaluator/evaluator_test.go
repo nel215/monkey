@@ -198,6 +198,10 @@ func TestErrorHandling(t *testing.T) {
 			"-true",
 			"unknown operator: -BOOLEAN",
 		},
+		{
+			"true + false",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
 	}
 
 	for _, tt := range tests {
