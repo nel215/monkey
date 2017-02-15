@@ -194,6 +194,10 @@ func TestErrorHandling(t *testing.T) {
 			"5 + true; 5;",
 			"type mismatch: INTEGER + BOOLEAN",
 		},
+		{
+			"-true",
+			"unknown operator: -BOOLEAN",
+		},
 	}
 
 	for _, tt := range tests {
