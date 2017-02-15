@@ -48,8 +48,11 @@ func evalProgram(program *ast.Program) object.Object {
 	for _, statement := range program.Statements {
 		res = Eval(statement)
 
-		if retVal, ok := res.(*object.ReturnValue); ok {
-			return retVal.Value
+		switch res := res.(type) {
+		case *object.ReturnValue:
+			return res.Value
+		case *object.Error:
+			return res
 		}
 	}
 
