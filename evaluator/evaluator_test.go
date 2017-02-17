@@ -238,3 +238,16 @@ if ( 10 > 1 ) {
 		}
 	}
 }
+
+func TestLetStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a = 5; a;", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
