@@ -212,6 +212,10 @@ func TestErrorHandling(t *testing.T) {
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
+			"foobar",
+			"identifier not found: foobar",
+		},
+		{
 			`
 if ( 10 > 1 ) {
   if ( 10 > 1 ) {
