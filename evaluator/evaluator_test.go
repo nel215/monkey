@@ -266,3 +266,16 @@ func TestFunctionObject(t *testing.T) {
 		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)
 	}
 }
+
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let identity = fn(x) { x; }; identity(5);", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
