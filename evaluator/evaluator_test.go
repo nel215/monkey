@@ -292,6 +292,8 @@ func TestFunctionApplication(t *testing.T) {
 		{"let add = fn(x, y) { return x + y; }; add(5, 5);", 10},
 		{"let add = fn(x, y) { return x + y; }; add(5 + 5, add(5, 5));", 20},
 		{"fn(x) {x;}(5)", 5},
+		{"let x = 1; fn(x) {x;}(2)", 2},
+		{"let x = 1; fn(x) {x;}(2); x", 1},
 	}
 
 	for _, tt := range tests {
