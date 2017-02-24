@@ -520,8 +520,18 @@ func TestStringLiteralExpression(t *testing.T) {
 
 	l := lexer.New(input)
 	p := New(l)
-	p.ParseProgram()
+	program := p.ParseProgram()
 	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf(`literal.Value not "hello world". got=%q`, literal.Value)
+	}
 }
 
 func TestOperatorPrecedenceParsing(t *testing.T) {
