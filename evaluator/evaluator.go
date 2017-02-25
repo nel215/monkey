@@ -165,6 +165,8 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
+	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+		return evalStringInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
@@ -198,6 +200,16 @@ func evalIntegerInfixExpression(operator string, left object.Object, right objec
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+func evalStringInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+	lv := left.(*object.String).Value
+	rv := right.(*object.String).Value
+
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+	return &object.String{Value: lv + rv}
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {
