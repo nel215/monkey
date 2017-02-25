@@ -216,6 +216,10 @@ func TestErrorHandling(t *testing.T) {
 			"identifier not found: foobar",
 		},
 		{
+			`"Hello" - "World"`,
+			"unknown operator: STRING - STRING",
+		},
+		{
 			`
 if ( 10 > 1 ) {
   if ( 10 > 1 ) {
