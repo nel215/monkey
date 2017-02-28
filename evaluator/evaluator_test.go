@@ -346,3 +346,21 @@ func TestStringConcatenation(t *testing.T) {
 	}
 
 }
+
+func TestBuiltinFunctions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`len("")`, 0},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, evaluated, int64(expected))
+		}
+	}
+}
