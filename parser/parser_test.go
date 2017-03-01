@@ -534,6 +534,15 @@ func TestStringLiteralExpression(t *testing.T) {
 	}
 }
 
+func TestParsingArrayLiterals(t *testing.T) {
+	input := "[1, 2 * 2, 3 + 3]"
+
+	l := lexer.New(input)
+	p := New(l)
+	p.ParseProgram()
+	checkParserErrors(t, p)
+}
+
 func TestOperatorPrecedenceParsing(t *testing.T) {
 	tests := []struct {
 		input     string
