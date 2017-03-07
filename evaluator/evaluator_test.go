@@ -57,6 +57,26 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	return true
 }
 
+func testArrayObject(t *testing.T, obj object.Object, expected []int64) bool {
+	res, ok := obj.(*object.Array)
+	if !ok {
+		t.Errorf("object is not Array. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	if len(res.Elements) != len(expected) {
+		t.Errorf("array has wrong num of elements. got=%d", len(res.Elements))
+		return false
+	}
+
+	for i, v := range expected {
+		if !testIntegerObject(t, res.Elements[i], v) {
+			return false
+		}
+	}
+	return true
+}
+
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -385,18 +405,7 @@ func TestArrayLiterals(t *testing.T) {
 	input := "[1, 2 * 2, 3 + 3]"
 
 	evaluated := testEval(input)
-	result, ok := evaluated.(*object.Array)
-	if !ok {
-		t.Fatalf("object is not Array. got=%T (%+v)", evaluated, evaluated)
-	}
-
-	if len(result.Elements) != 3 {
-		t.Fatalf("array has wrong num of elements. got=%d", len(result.Elements))
-	}
-
-	testIntegerObject(t, result.Elements[0], 1)
-	testIntegerObject(t, result.Elements[1], 4)
-	testIntegerObject(t, result.Elements[2], 6)
+	testArrayObject(t, evaluated, []int64{1, 4, 6})
 }
 
 func TestArrayIndexExpressions(t *testing.T) {
