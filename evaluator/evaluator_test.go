@@ -251,6 +251,10 @@ if ( 10 > 1 ) {
 `,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{
+			"{}[fn(x) { x }]",
+			"unusable as hash key: FUNCTION",
+		},
 	}
 
 	for _, tt := range tests {
