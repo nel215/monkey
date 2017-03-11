@@ -33,6 +33,10 @@ type HashKey struct {
 	Value uint64
 }
 
+type Hashable interface {
+	HashKey() HashKey
+}
+
 type BuiltinFunction func(args ...Object) Object
 
 type Null struct {
