@@ -439,3 +439,17 @@ func TestArrayIndexExpressions(t *testing.T) {
 		}
 	}
 }
+
+func TestHashLiterals(t *testing.T) {
+	input := `let two = "two";
+    {
+        two: 1 + 1,
+    }
+`
+
+	evaluated := testEval(input)
+	_, ok := evaluated.(*object.Hash)
+	if !ok {
+		t.Fatalf("Eval didn't return Hash. got=%T (+%v)", evaluated, evaluated)
+	}
+}
